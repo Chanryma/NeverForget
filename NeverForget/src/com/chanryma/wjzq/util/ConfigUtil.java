@@ -15,11 +15,18 @@ public class ConfigUtil {
     static {
         propertyMap = new HashMap<String, String>();
 
-//        String url = new ConfigUtil().getClass().getClassLoader().getResource(INI_FILE_NAME).toString().substring(6);
-        String url = new ConfigUtil().getClass().getClassLoader().getResource(INI_FILE_NAME).toString().substring(5);
-//        String safeUrl = url.replace("%20", " ");
-        String safeUrl = url;
-        File file = new File(safeUrl);
+        boolean isWindows = true;
+        String url;
+        if (isWindows) {
+            url = new ConfigUtil().getClass().getClassLoader().getResource(INI_FILE_NAME).toString().substring(6);
+            url = url.replace("%20", " ");
+        } else {
+            url = new ConfigUtil().getClass().getClassLoader().getResource(INI_FILE_NAME).toString().substring(5);
+        }
+
+        LogUtil.info("url=" + url);
+
+        File file = new File(url);
 
         FileInputStream inStream = null;
         try {
