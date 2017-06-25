@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id="dbManager" class="com.chanryma.wjzq.manager.DBManager" scope="singleton" />
+
+    <!-- Repository begin -->
+    <bean id="userRepository" class="com.chanryma.wjzq.domain.user.UserRepository" scope="singleton" />
+    <bean id="noteRepository" class="com.chanryma.wjzq.domain.note.NoteRepository" scope="singleton" />
+    <bean id="attachmentRepository" class="com.chanryma.wjzq.domain.attachment.AttachmentRepository" scope="singleton" />
+    <!-- Repository end -->
+    
+    <!-- Service begin -->
+    <bean id="userService" class="com.chanryma.wjzq.service.UserService" scope="singleton" />
+    <bean id="noteService" class="com.chanryma.wjzq.service.NoteService" scope="singleton" />
+    <bean id="attachmentService" class="com.chanryma.wjzq.service.AttachmentService" scope="singleton" />
+    <!-- Dao end -->
+    
+    <!-- Dao begin -->
+    <bean id="userDao" class="com.chanryma.wjzq.dao.UserDao" scope="singleton" />
+    <bean id="noteDao" class="com.chanryma.wjzq.dao.NoteDao" scope="singleton" />
+    <bean id="attachmentDao" class="com.chanryma.wjzq.dao.AttachmentDao" scope="singleton" />
+    <!-- Dao end -->
+</beans>
