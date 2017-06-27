@@ -15,6 +15,7 @@ public class NoteServlet extends BaseServlet {
     @Override
     public void initGetPath2MethodNames(Map<String, String> getPath2MethodNames) {
         getPath2MethodNames.put("/note/query", "query");
+        getPath2MethodNames.put("/note/queryOne", "queryOne");
     }
 
     @Override

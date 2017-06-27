@@ -25,8 +25,8 @@ import com.mysql.jdbc.StringUtils;
 public abstract class BaseServlet extends HttpServlet {
     private static final long serialVersionUID = 6526365171833095344L;
     private Object service;
-    private static Map<String, String> getPath2MethodNames;
-    private static Map<String, String> postPath2MethodNames;
+    private Map<String, String> getPath2MethodNames;
+    private Map<String, String> postPath2MethodNames;
 
     public abstract Object getService();
 
@@ -76,14 +76,20 @@ public abstract class BaseServlet extends HttpServlet {
         logParameters(request);
 
         ResponseEntity responseEntity = new ResponseEntity();
+        responseEntity.setStatus(Constant.RESULT_CODE_ERROR);
+        responseEntity.setMsg("");
+
         if (StringUtils.isEmptyOrWhitespaceOnly(methodName)) {
+            responseEntity.setMsg("不欢迎野路子");
             sendResponse(response, responseEntity);
             return;
         }
 
         try {
             Method method = service.getClass().getMethod(methodName, HttpServletRequest.class);
-            responseEntity = (ResponseEntity) method.invoke(service, request);
+            Object data = method.invoke(service, request);
+            responseEntity.setStatus(Constant.RESULT_CODE_SUCCESS);
+            responseEntity.setData(data);
         } catch (NoSuchMethodException e) {
             LogUtil.error(e);
         } catch (SecurityException e) {
@@ -102,13 +108,16 @@ public abstract class BaseServlet extends HttpServlet {
 
     private String getMethodName(HttpServletRequest request, boolean isPost) {
         String requestUrl = request.getRequestURL().toString();
+        LogUtil.debug("requestUrl=" + requestUrl);
         Map<String, String> path2MethodNames = isPost ? postPath2MethodNames : getPath2MethodNames;
         Iterator<String> iterator = path2MethodNames.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
+            LogUtil.debug("getMethodName key=" + key);
             if (requestUrl.endsWith(key)) {
                 return path2MethodNames.get(key);
             }
+            LogUtil.debug("getMethodName key not match");
         }
 
         return null;

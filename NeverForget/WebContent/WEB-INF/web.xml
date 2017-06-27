@@ -32,6 +32,10 @@
     <url-pattern>/note/query</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>NoteServlet</servlet-name>
+    <url-pattern>/note/queryOne</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>UploadServlet</servlet-name>
     <url-pattern>/file/add</url-pattern>
   </servlet-mapping>

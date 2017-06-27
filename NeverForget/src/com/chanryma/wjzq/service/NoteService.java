@@ -6,17 +6,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.chanryma.wjzq.domain.note.Note;
 import com.chanryma.wjzq.domain.user.User;
+import com.chanryma.wjzq.exception.InvalidRequestParameterException;
 import com.chanryma.wjzq.exception.ServiceException;
-import com.chanryma.wjzq.model.ResponseEntity;
-import com.chanryma.wjzq.util.Constant;
 import com.chanryma.wjzq.util.LogUtil;
 import com.chanryma.wjzq.util.StringUtil;
 
 public class NoteService extends BaseService {
-    public ResponseEntity save(HttpServletRequest request) throws ServiceException {
+    public int save(HttpServletRequest request) throws ServiceException, InvalidRequestParameterException {
         User user = findUser(request);
 
-        ResponseEntity responseEntity = new ResponseEntity();
         String longitude = request.getParameter("longitude");
         String latitude = request.getParameter("latitude");
         String address = request.getParameter("address");
@@ -27,12 +25,7 @@ public class NoteService extends BaseService {
             throw new ServiceException("亲，你啥都不写，不太好吧……");
         }
 
-        int lockTimeInt = 0;
-        try {
-            lockTimeInt = Integer.parseInt(lockTime);
-        } catch (NumberFormatException e) {
-            LogUtil.error("Received invalid lockTime '" + lockTime + "'.");
-        }
+        int lockTimeInt = ServiceUtil.parameterIntValue("lockTime", lockTime);
 
         if (lockTimeInt < 0) {
             LogUtil.error("Received negative lockTime '" + lockTime + "', adjust to default value 0.");
@@ -45,20 +38,22 @@ public class NoteService extends BaseService {
         note.setLatitude(latitude);
         note.setLockTime(lockTimeInt);
         int noteId = noteRepository.save(note);
-        responseEntity.setStatus(Constant.RESULT_CODE_SUCCESS);
-        responseEntity.setData(noteId);
 
-        return responseEntity;
+        return noteId;
     }
 
-    public ResponseEntity query(HttpServletRequest request) throws ServiceException {
+    public List<Note> query(HttpServletRequest request) throws ServiceException {
         User user = findUser(request);
-
-        ResponseEntity responseEntity = new ResponseEntity();
         List<Note> notes = noteRepository.queryWithUserId(user.getOpenId());
-        responseEntity.setStatus(Constant.RESULT_CODE_SUCCESS);
-        responseEntity.setData(notes);
 
-        return responseEntity;
+        return notes;
+    }
+
+    public Note queryOne(HttpServletRequest request) throws ServiceException, InvalidRequestParameterException {
+        String noteId = request.getParameter("noteId");
+        int noteIdInt = ServiceUtil.parameterIntValue("noteId", noteId);
+        Note note = noteRepository.queryWithNoteId(noteIdInt);
+
+        return note;
     }
 }

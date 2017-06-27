@@ -15,4 +15,8 @@ public class NoteRepository {
     public List<Note> queryWithUserId(final String userId) {
         return noteDao.queryWithUserId(userId);
     }
+
+    public Note queryWithNoteId(final int noteId) {
+        return noteDao.queryWithNoteId(noteId);
+    }
 }

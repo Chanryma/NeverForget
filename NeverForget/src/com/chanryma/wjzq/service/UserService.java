@@ -9,9 +9,7 @@ import com.chanryma.wjzq.domain.user.UserRepository;
 import com.chanryma.wjzq.exception.ServiceException;
 import com.chanryma.wjzq.factory.BeanFactory;
 import com.chanryma.wjzq.model.ConfigEntity;
-import com.chanryma.wjzq.model.ResponseEntity;
 import com.chanryma.wjzq.util.ConfigUtil;
-import com.chanryma.wjzq.util.Constant;
 import com.chanryma.wjzq.util.GsonUtil;
 import com.chanryma.wjzq.util.LogUtil;
 import com.chanryma.wjzq.util.StringUtil;
@@ -22,9 +20,7 @@ import com.google.gson.JsonObject;
 public class UserService {
     private UserRepository userRepository = (UserRepository) BeanFactory.getInstance().getBean("userRepository");
 
-    public ResponseEntity login(HttpServletRequest request) throws ServiceException {
-        ResponseEntity responseEntity = new ResponseEntity();
-
+    public String login(HttpServletRequest request) throws ServiceException {
         String sessionCode = request.getParameter("sessionCode");
         String nickName = request.getParameter("nickName");
         if (StringUtil.isEmpty(sessionCode) || StringUtil.isEmpty(nickName)) {
@@ -37,10 +33,8 @@ public class UserService {
         User user = new User(openId, nickName);
         user.setSessionCode(uuid);
         userRepository.saveUser(user);
-        responseEntity.setStatus(Constant.RESULT_CODE_SUCCESS);
-        responseEntity.setData(uuid);
 
-        return responseEntity;
+        return uuid;
     }
 
     private String sessionCode2UserInfo(String sessionCode) throws ServiceException {

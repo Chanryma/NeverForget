@@ -1,8 +1,14 @@
 package com.chanryma.wjzq.servlet;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +19,7 @@ import javax.servlet.http.Part;
 import com.chanryma.wjzq.model.ResponseEntity;
 import com.chanryma.wjzq.util.Constant;
 import com.chanryma.wjzq.util.GsonUtil;
+import com.chanryma.wjzq.util.LogUtil;
 
 public class UploadServlet extends HttpServlet {
     private static final long serialVersionUID = 8382528398817665361L;
@@ -40,13 +47,48 @@ public class UploadServlet extends HttpServlet {
                 fileSaveDir.mkdir();
             }
 
-            for (Part part : request.getParts()) {
-                String fileName = extractFileName(part);
-                // refines the fileName in case it is an absolute path
-                fileName = new File(fileName).getName();
-                part.write(savePath + File.separator + fileName);
+            OutputStream outStream = null;
+            InputStream inStream = null;
+
+            int bytes = 0;
+            try {
+                inStream = request.getInputStream();
+                
+                Path target = FileSystems.getDefault().getPath(savePath,  File.separator + System.currentTimeMillis() + ".png");;
+                Files.copy(inStream, target);
+                LogUtil.debug("Saved one file.");
+//                byte[] buffer = new byte[1024];
+//                int size = inStream.read(buffer);
+//                if (size > 0) {
+//                    String filePath = savePath + File.separator + System.currentTimeMillis();
+//                    outStream = new FileOutputStream(filePath);
+//                    while (size > 0) {
+//                        LogUtil.debug("read bytes " + bytes);
+//                        outStream.write(buffer, 0, size);
+//                        buffer = new byte[1024];
+//                        size = inStream.read(buffer);
+//                        bytes += size;
+//                    }
+//
+//                    LogUtil.debug("Saved one file to " + filePath);
+//                }
+            } catch (IOException e) {
+
+            } finally {
+                if (inStream != null) {
+                    try {
+                        inStream.close();
+                    } catch (IOException e) {
+                    }
+                }
+
+                if (outStream != null) {
+                    try {
+                        outStream.close();
+                    } catch (IOException e) {
+                    }
+                }
             }
-            request.setAttribute("message", "Upload has been done successfully!");
         } catch (Exception e) {
             entity.setStatus(Constant.RESULT_CODE_ERROR);
         }
